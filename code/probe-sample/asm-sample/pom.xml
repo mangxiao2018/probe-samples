@@ -3,11 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <artifactId>probe-sample</artifactId>
-        <groupId>com.mangxiao</groupId>
-        <version>1.0.0</version>
-    </parent>
 
     <groupId>com.mangxiao</groupId>
     <artifactId>asm-sample</artifactId>
@@ -16,32 +11,51 @@
 
     <properties>
         <maven.configuration.manifestFile>src/main/resources/META-INF/MANIFEST.MF</maven.configuration.manifestFile>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <asm.version>8.0.1</asm.version>
     </properties>
 
     <!--asm-dependences-->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.ow2.asm</groupId>
-                <artifactId>asm-commons</artifactId>
-                <version>6.2.1</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm-analysis</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm-tree</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <artifactId>asm</artifactId>
+            <groupId>org.ow2.asm</groupId>
+            <version>${asm.version}</version>
+        </dependency>
+
+        <dependency>
+            <artifactId>asm-tree</artifactId>
+            <groupId>org.ow2.asm</groupId>
+            <version>${asm.version}</version>
+        </dependency>
+
+        <dependency>
+            <artifactId>asm-analysis</artifactId>
+            <groupId>org.ow2.asm</groupId>
+            <version>${asm.version}</version>
+        </dependency>
+
+        <dependency>
+            <artifactId>asm-commons</artifactId>
+            <groupId>org.ow2.asm</groupId>
+            <version>${asm.version}</version>
+        </dependency>
+
+        <dependency>
+            <artifactId>asm-util</artifactId>
+            <groupId>org.ow2.asm</groupId>
+            <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.67</version>
+        </dependency>
+    </dependencies>
 
     <!--package:building all source to jar-->
     <build>
-        <finalName>bytebuddy-agent-sample</finalName>
+        <finalName>asm-agent-sample</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -61,27 +75,6 @@
             </testResource>
         </testResources>
         <plugins>
-            <!-- package byte-buddy to Agent`s jar -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <artifactSet>
-                        <includes>
-                            <include>net.bytebuddy:byte-buddy:jar:</include>
-                            <include>net.bytebuddy:byte-buddy-agent:jar:</include>
-                        </includes>
-                    </artifactSet>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -107,7 +100,7 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                    <encoding>UTF-8</encoding>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>
@@ -120,6 +113,32 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                            <archive>
+                                <manifestEntries>
+                                    <Premain-Class>com.mangxiao.probe.asm.PreMain</Premain-Class>
+                                    <Agent-Class>com.mangxiao.probe.asm.PreMain</Agent-Class>
+                                    <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                                    <Can-Retransform-Classes>true</Can-Retransform-Classes>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
