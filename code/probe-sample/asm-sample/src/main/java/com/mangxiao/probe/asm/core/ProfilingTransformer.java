@@ -14,6 +14,7 @@ public class ProfilingTransformer implements ClassFileTransformer {
     @Override
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
         try {
+            System.out.println("###########className:" + className);
             if (ProfilingFilter.isNotNeedInject(className)){
                 return classfileBuffer;
             }
