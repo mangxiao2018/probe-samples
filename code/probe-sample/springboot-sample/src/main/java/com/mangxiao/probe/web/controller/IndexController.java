@@ -19,4 +19,11 @@ public class IndexController {
         log.info("welcome id : " + id);
         return String.valueOf(id);
     }
+
+    @RequestMapping(value = "/queryUserInfo")
+    @ResponseBody
+    public String queryUserInfo(@RequestParam String userId){
+        log.info("查询用户信息，userId：" + userId);
+        return userId;
+    }
 }

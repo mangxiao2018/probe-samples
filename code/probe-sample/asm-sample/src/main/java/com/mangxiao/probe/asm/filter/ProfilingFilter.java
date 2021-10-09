@@ -21,7 +21,7 @@ public class ProfilingFilter {
         exceptPackagePrefix.add("com/alibaba");
 
         // 默认不注入的方法
-        exceptMethods.add("main");
+//        exceptMethods.add("main");
         exceptMethods.add("premain");
         exceptMethods.add("getClass");//java.lang.Object
         exceptMethods.add("hashCode");//java.lang.Object
